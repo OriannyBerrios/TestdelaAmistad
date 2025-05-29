@@ -1,0 +1,1168 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Amistad | ¿Cuánto me conoces?</title>
+    <style>
+        :root {
+            --primary-color: #6a1b9a;
+            --secondary-color: #d1c4e9;
+            --background-color: #f3e5f5;
+            --text-color: #4a148c;
+            --correct-color: #4caf50;
+            --wrong-color: #f44336;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1, h2, h3 {
+            color: var(--primary-color);
+        }
+        
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        .intro {
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .name-input {
+            margin: 20px 0;
+        }
+        
+        .name-input input {
+            padding: 10px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 5px;
+            width: 100%;
+            max-width: 300px;
+            font-size: 16px;
+        }
+        
+        .progress-container {
+            margin-bottom: 30px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            background-color: #e1bee7;
+            border-radius: 10px;
+            height: 12px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 12px;
+            background: linear-gradient(90deg, #6a1b9a, #9c27b0);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .question {
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .question h3 {
+            margin-top: 0;
+        }
+        
+        .options {
+            margin-top: 15px;
+        }
+        
+        .option {
+            display: block;
+            margin: 10px 0;
+            padding: 12px 15px;
+            background-color: var(--secondary-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            padding-left: 40px;
+        }
+        
+        .option:hover {
+            background-color: #d1c4e9;
+        }
+        
+        .option::before {
+            content: "";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            background-color: white;
+        }
+        
+        .option.selected::before {
+            background-color: var(--primary-color);
+        }
+        
+        .option.selected.correct {
+            background-color: var(--correct-color);
+            color: white;
+        }
+        
+        .option.selected.correct::before {
+            background-color: white;
+            content: "✓";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--correct-color);
+            border-color: white;
+        }
+        
+        .option.selected.wrong {
+            background-color: var(--wrong-color);
+            color: white;
+        }
+        
+        .option.selected.wrong::before {
+            background-color: white;
+            content: "✗";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--wrong-color);
+            border-color: white;
+        }
+        
+        .open-answer {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: inherit;
+            font-size: 16px;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: #7b1fa2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        button:disabled {
+            background-color: #b39ddb;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 30px;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result h2 {
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .score {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 20px 0;
+            background-color: var(--secondary-color);
+            padding: 10px;
+            border-radius: 10px;
+            display: inline-block;
+            min-width: 200px;
+        }
+        
+        .emoji {
+            font-size: 60px;
+            margin: 20px 0;
+            animation: bounce 1s infinite alternate;
+        }
+        
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+        
+        .result-message {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .share-buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .share-buttons button {
+            margin: 0 5px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .share-buttons .facebook {
+            background-color: #3b5998;
+        }
+        
+        .share-buttons .whatsapp {
+            background-color: #25D366;
+        }
+        
+        .answer-key {
+            margin-top: 30px;
+            text-align: left;
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .answer-key h3 {
+            margin-top: 0;
+            border-bottom: 1px solid var(--primary-color);
+            padding-bottom: 8px;
+        }
+        
+        .answer-item {
+            margin-bottom: 15px;
+        }
+        
+        .answer-item p {
+            margin: 5px 0;
+        }
+        
+        .correct-answer {
+            color: var(--correct-color);
+            font-weight: bold;
+            background-color: #e8f5e9;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+        .participants-list {
+            margin-top: 30px;
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .participant {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .participant-name {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .participant-score {
+            font-weight: bold;
+        }
+        
+        .create-test {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            background-color: #b39ddb;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .navigation {
+                flex-direction: column;
+            }
+            
+            .navigation button {
+                margin-bottom: 10px;
+                width: 100%;
+            }
+            
+            .share-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .share-buttons button {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>¿Cuánto me conoces realmente? ¡El Test de la Amistad!</h1>
+        </header>
+        
+        <div class="intro">
+            <p>¡Hola <span id="friend-name" contenteditable="true">Amigo/a</span>!</p>
+            <p>He preparado este pequeño test para ver qué tan bien me conoces. Responde con lo primero que creas que es correcto sobre mí. ¡No hagas trampa preguntando a otros! Es solo por diversión para ver si eres un/a verdadero/a experto/a en <span id="your-name" contenteditable="true">[Tu Nombre]</span>.</p>
+            <p>Al final, podrás comparar tus respuestas con las mías para ver qué puntuación obtienes. ¡Mucha suerte!</p>
+        </div>
+        
+        <div class="name-input">
+            <h3>Ingresa tu nombre:</h3>
+            <input type="text" id="participant-name" placeholder="Escribe tu nombre aquí">
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="progress-text">
+                <span id="current-question">1</span> / <span id="total-questions">35</span> preguntas
+            </div>
+        </div>
+        
+        <div id="quiz-container">
+            <!-- Sección 1: Gustos y Preferencias -->
+            <div class="question active" id="q1">
+                <h3>1. ¿Cuál es mi color favorito?</h3>
+                <div class="options">
+                    <div class="option" data-correct="true">Negro</div>
+                    <div class="option">Morado</div>
+                    <div class="option">Gris</div>
+                    <div class="option">Blanco</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q2">
+                <h3>2. ¿Qué tipo de música me gusta más?</h3>
+                <div class="options">
+                    <div class="option">Rock</div>
+                    <div class="option" data-correct="true">Pop-Rock</div>
+                    <div class="option">Pop-Latino</div>
+                    <div class="option">Merengue</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q3">
+                <h3>3. ¿Cuál es mi comida chatarra favorita?</h3>
+                <div class="options">
+                    <div class="option">Hamburguesa</div>
+                    <div class="option">Shawarma</div>
+                    <div class="option" data-correct="true">Pizza</div>
+                    <div class="option">Papas sheddar</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q4">
+                <h3>4. ¿Cuál es mi bebida favorita?</h3>
+                <div class="options">
+                    <div class="option">Pepsi-Cola</div>
+                    <div class="option" data-correct="true">Coca-cola</div>
+                    <div class="option">Malta</div>
+                    <div class="option">Jugo de Mora</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q5">
+                <h3>5. ¿Prefiero la cerveza o el vino?</h3>
+                <div class="options">
+                    <div class="option">Vino</div>
+                    <div class="option">Cerveza</div>
+                    <div class="option" data-correct="true">Ambas</div>
+                    <div class="option">Ninguna</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q6">
+                <h3>6. ¿Cuál es mi estación del año favorita?</h3>
+                <div class="options">
+                    <div class="option">Primavera</div>
+                    <div class="option">Verano</div>
+                    <div class="option" data-correct="true">Otoño</div>
+                    <div class="option">Invierno</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q7">
+                <h3>7. ¿Cuál es mi película favorita?</h3>
+                <div class="options">
+                    <div class="option">One day</div>
+                    <div class="option" data-correct="true">Violet and Finch</div>
+                    <div class="option">Ciudades de Papel</div>
+                    <div class="option">Orgullo y Prejuicio</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q8">
+                <h3>8. ¿Cuál es mi serie de televisión favorita?</h3>
+                <div class="options">
+                    <div class="option">Bridgerton</div>
+                    <div class="option">Dark</div>
+                    <div class="option" data-correct="true">You</div>
+                    <div class="option">Thirteen Reasons Why</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q9">
+                <h3>9. ¿Qué libro me ha marcado más?</h3>
+                <div class="options">
+                    <div class="option">Ciudades de Papel</div>
+                    <div class="option" data-correct="true">Buscando a Alaska</div>
+                    <div class="option">El mundo Amarillo</div>
+                    <div class="option">La reina de Espinas</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q10">
+                <h3>10. ¿Cuál es mi animal favorito?</h3>
+                <div class="options">
+                    <div class="option">Perro</div>
+                    <div class="option" data-correct="true">Gato</div>
+                    <div class="option">Lobo</div>
+                    <div class="option">Mariposa</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q11">
+                <h3>11. ¿Prefiero la playa o la montaña?</h3>
+                <div class="options">
+                    <div class="option">Playa</div>
+                    <div class="option">Montaña</div>
+                    <div class="option" data-correct="true">Ambas</div>
+                    <div class="option">Ninguna</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q12">
+                <h3>12. ¿Cuál es mi hobby principal?</h3>
+                <div class="options">
+                    <div class="option">Dormir</div>
+                    <div class="option">Leer</div>
+                    <div class="option">Escuchar música</div>
+                    <div class="option" data-correct="true">Escribir</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q13">
+                <h3>13. ¿Soy más de perros o de gatos?</h3>
+                <div class="options">
+                    <div class="option">Perros</div>
+                    <div class="option" data-correct="true">Gatos</div>
+                    <div class="option">Ambos</div>
+                    <div class="option">Ninguno</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q14">
+                <h3>14. ¿Cuál es mi deporte favorito (para ver o practicar)?</h3>
+                <div class="options">
+                    <div class="option">Béisbol</div>
+                    <div class="option">Futbol</div>
+                    <div class="option">Esgrima</div>
+                    <div class="option" data-correct="true">Ninguno</div>
+                </div>
+            </div>
+            
+             <!-- Sección 2: Personalidad y Hábitos -->
+            <div class="question" id="q15">
+                <h3>15. ¿Soy más...?</h3>
+                <div class="options">
+                    <div class="option" data-correct="true">Introvertido/a</div>
+                    <div class="option">Extrovertido/a</div>
+                    <div class="option">Un poco de ambos</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q16">
+                <h3>16. ¿Cuál es mi mayor miedo?</h3>
+                <div class="options">
+                    <div class="option">Las alturas</div>
+                    <div class="option" data-correct="true">La oscuridad</div>
+                    <div class="option">Perder algo</div>
+                    <div class="option">Presentar un parcial</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q17">
+                <h3>17. ¿Cuál es mi mayor sueño o aspiración?</h3>
+                <div class="options">
+                    <div class="option" data-correct="true">Conocer muchos lugares</div>
+                    <div class="option">Vivir en otro país</div>
+                    <div class="option">Tener dinero sin trabajar</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q18">
+                <h3>18. ¿Cómo reacciono normalmente ante el estrés?</h3>
+                <div class="options">
+                    <div class="option">Llora</div>
+                    <div class="option" data-correct="true">Se abruma</div>
+                    <div class="option">Deja de comer</div>
+                    <div class="option">Grita</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q19">
+                <h3>19. ¿Soy madrugador/a o noctámbulo/a?</h3>
+                <div class="options">
+                    <div class="option">Madrugador/a</div>
+                    <div class="option">Noctámbulo/a</div>
+                    <div class="option" data-correct="true">Depende del día</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q20">
+                <h3>20. ¿Qué me saca de quicio rápidamente?</h3>
+                <div class="options">
+                    <div class="option">El desorden</div>
+                    <div class="option">No entender el porqué de las cosas</div>
+                    <div class="option" data-correct="true">Las mentiras</div>
+                    <div class="option">Que no me presten atención cuando estoy hablando</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q21">
+                <h3>21. ¿Cuál es una de mis manías?</h3>
+                <div class="options">
+                    <div class="option">Hablar sola y en voz alta</div>
+                    <div class="option">Alinear Objetos</div>
+                    <div class="option" data-correct="true">Morderme las uñas o los labios cuando estoy concentrada</div>
+                    <div class="option">Mantener todo en orden</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q22">
+                <h3>22. ¿Cómo me gusta celebrar mi cumpleaños?</h3>
+                <div class="options">
+                    <div class="option">Sola</div>
+                    <div class="option" data-correct="true">Paseando</div>
+                    <div class="option">Compartiendo con amigos</div>
+                    <div class="option">Salir a comer</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q23">
+                <h3>23. ¿Qué valoro más en una amistad?</h3>
+                <div class="options">
+                    <div class="option">Lealtad</div>
+                    <div class="option">Confianza</div>
+                    <div class="option">Tiempo de calidad</div>
+                    <div class="option" data-correct="true">Sinceridad</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q24">
+                <h3>24. ¿Cuál es mi lenguaje del amor principal?</h3>
+                <div class="options">
+                    <div class="option">Palabras de afirmación</div>
+                    <div class="option">Tiempo de calidad</div>
+                    <div class="option">Regalos</div>
+                    <div class="option" data-correct="true">Actos de servicio</div>
+                    <div class="option">Contacto físico</div>
+                </div>
+            </div>
+            
+              <!-- Sección 3: Recuerdos y Experiencias Compartidas -->
+            <div class="question" id="q25">
+                <h3>25. ¿Dónde nos conocimos?</h3>
+                <input type="text" class="open-answer" placeholder="Escribe tu respuesta aquí...">
+            </div>
+            
+            <div class="question" id="q26">
+                <h3>26. ¿Cuál es el recuerdo más divertido que tenemos juntos?</h3>
+                <input type="text" class="open-answer" placeholder="Escribe tu respuesta aquí...">
+            </div>
+            
+            <div class="question" id="q27">
+                <h3>27. ¿Cuál es el viaje más memorable que hemos hecho juntos?</h3>
+                <input type="text" class="open-answer" placeholder="Escribe tu respuesta aquí...">
+            </div>
+            
+            <div class="question" id="q28">
+                <h3>28. ¿Cuál es una de las cosas más locas que hemos hecho juntos?</h3>
+                <input type="text" class="open-answer" placeholder="Escribe tu respuesta aquí...">
+            </div>
+            
+            <div class="question" id="q29">
+                <h3>29. ¿Qué es lo que más me gusta de nuestra amistad?</h3>
+                <input type="text" class="open-answer" placeholder="Escribe tu respuesta aquí...">
+            </div>
+            
+            <div class="question" id="q30">
+                <h3>30. ¿Cuál fue nuestra primera impresión el uno del otro?</h3>
+                <input type="text" class="open-answer" placeholder="Escribe tu respuesta aquí...">
+            </div>
+            
+            <!-- Sección 4: Preguntas Aleatorias -->
+            <div class="question" id="q31">
+                <h3>31. Si tuviera un superpoder, ¿cuál elegiría?</h3>
+                <div class="options">
+                    <div class="option" data-correct="true">Teletransportarme</div>
+                    <div class="option">Leer mentes</div>
+                    <div class="option">Ser invisible</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q32">
+                <h3>32. ¿Qué objeto no puede faltar en mi bolso/mochila?</h3>
+                <div class="options">
+                    <div class="option">Llavero</div>
+                    <div class="option" data-correct="true">La tarjeta</div>
+                    <div class="option">Gloss</div>
+                    <div class="option">Lápiz</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q33">
+                <h3>33. ¿Prefiero escribir o llamar?</h3>
+                <div class="options">
+                    <div class="option">Escribir (mensajes)</div>
+                    <div class="option">Llamar</div>
+                    <div class="option" data-correct="true">Depende</div>
+                </div>
+            </div>
+            
+            <div class="question" id="q34">
+                <h3>34. ¿Cuál es mi talento oculto?</h3>
+                <input type="text" class="open-answer" placeholder="Escribe tu respuesta aquí...">
+            </div>
+            
+            <div class="question" id="q35">
+                <h3>35. ¿Cuándo es mi cumpleaños?</h3>
+                <div class="options">
+                    <div class="option">12 de septiembre</div>
+                    <div class="option">14 de noviembre</div>
+                    <div class="option" data-correct="true">14 de septiembre</div>
+                    <div class="option">18 de noviembre</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button id="prev-btn" disabled>← Anterior</button>
+            <button id="next-btn">Siguiente →</button>
+        </div>
+        
+        <div class="result" id="result">
+            <h2>¡Resultado del Test de Amistad!</h2>
+            <div class="emoji" id="result-emoji">😊</div>
+            <div class="score">Has acertado <span id="score">0</span> de <span id="total-score">35</span> preguntas</div>
+            <p class="result-message" id="result-message">¡Buen intento! Parece que aún hay cosas que no sabes de mí.</p>
+            
+            <div class="answer-key" id="answer-key">
+                <h3>Respuestas correctas:</h3>
+                <!-- Las respuestas correctas se generarán automáticamente con JavaScript -->
+            </div>
+            
+            <div class="participants-list" id="participants-list">
+                <h3>Resultados de participantes:</h3>
+                <!-- Los resultados de los participantes se agregarán aquí -->
+            </div>
+            
+            <div class="share-buttons">
+                <button class="facebook" onclick="shareOnFacebook()">Compartir en Facebook</button>
+                <button class="whatsapp" onclick="shareOnWhatsApp()">Compartir en WhatsApp</button>
+            </div>
+            
+            <button onclick="restartQuiz()">Volver a intentar</button>
+        </div>
+        
+        <div class="create-test">
+            <h2>¿Quieres crear tu propio test?</h2>
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="openTab('tab1')">Instrucciones</button>
+                <button class="tab-button" onclick="openTab('tab2')">Personalizar</button>
+            </div>
+            
+            <div id="tab1" class="tab-content active">
+                <p>Para crear tu propio test de amistad:</p>
+                <ol>
+                    <li>Cambia el texto en los campos editables (nombres)</li>
+                    <li>Modifica las preguntas y respuestas en el código</li>
+                    <li>Marca las respuestas correctas con <code>data-correct="true"</code></li>
+                    <li>Guarda el archivo y compártelo con tus amigos</li>
+                </ol>
+                <p>Puedes editar directamente en el código o copiarlo a un editor de texto.</p>
+            </div>
+            
+            <div id="tab2" class="tab-content">
+                <h3>Personaliza tu test:</h3>
+                <div class="name-input">
+                    <label for="creator-name">Tu nombre:</label>
+                    <input type="text" id="creator-name" placeholder="Tu nombre">
+                </div>
+                <div class="name-input">
+                    <label for="test-title">Título del test:</label>
+                    <input type="text" id="test-title" placeholder="Título del test">
+                </div>
+                <button onclick="downloadTest()">Descargar mi test personalizado</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Configuración del test
+        let currentQuestion = 1;
+        let totalQuestions = 35;
+        let score = 0;
+        let participants = [];
+        
+        // Respuestas correctas
+        const correctAnswers = {
+            1: "Negro",
+            2: "Pop-Rock",
+            3: "Pizza",
+            4: "Coca-cola",
+            5: "Ambas",
+            6: "Otoño",
+            7: "Violet and Finch",
+            8: "You",
+            9: "Buscando a Alaska",
+            10: "Gato",
+            11: "Ambas",
+            12: "Escribir",
+            13: "Gatos",
+            14: "Ninguno",
+            15: "Introvertido/a",
+            16: "La oscuridad",
+            17: "Conocer muchos lugares",
+            18: "Se abruma",
+            19: "Depende del día",
+            20: "Las mentiras",
+            21: "Morderme las uñas o los labios cuando estoy concentrada",
+            22: "Paseando",
+            23: "Sinceridad",
+            24: "Actos de servicio",
+            25: "", // Respuesta abierta
+            26: "", // Respuesta abierta
+            27: "", // Respuesta abierta
+            28: "", // Respuesta abierta
+            29: "", // Respuesta abierta
+            30: "", // Respuesta abierta
+            31: "Teletransportarme",
+            32: "La tarjeta",
+            33: "Depende",
+            34: "", // Respuesta abierta
+            35: "14 de septiembre"
+        };
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            updateButtons();
+            
+            // Configurar eventos para las opciones
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    selectOption(this);
+                });
+            });
+            
+            // Configurar botones de navegación
+            document.getElementById('next-btn').addEventListener('click', nextQuestion);
+            document.getElementById('prev-btn').addEventListener('click', prevQuestion);
+        });
+        
+        // Funciones de navegación
+        function nextQuestion() {
+            if (currentQuestion < totalQuestions) {
+                document.getElementById(`q${currentQuestion}`).classList.remove('active');
+                currentQuestion++;
+                document.getElementById(`q${currentQuestion}`).classList.add('active');
+                
+                updateProgress();
+                updateButtons();
+            } else {
+                finishQuiz();
+            }
+        }
+        
+        function prevQuestion() {
+            if (currentQuestion > 1) {
+                document.getElementById(`q${currentQuestion}`).classList.remove('active');
+                currentQuestion--;
+                document.getElementById(`q${currentQuestion}`).classList.add('active');
+                
+                updateProgress();
+                updateButtons();
+            }
+        }
+        
+        function updateProgress() {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+            document.getElementById('current-question').textContent = currentQuestion;
+            document.getElementById('total-questions').textContent = totalQuestions;
+        }
+        
+        function updateButtons() {
+            document.getElementById('prev-btn').disabled = currentQuestion === 1;
+            document.getElementById('next-btn').textContent = currentQuestion === totalQuestions ? 'Finalizar →' : 'Siguiente →';
+        }
+        
+        function selectOption(option) {
+            // Quitar selección de otras opciones en la misma pregunta
+            const siblings = option.parentNode.querySelectorAll('.option');
+            siblings.forEach(sib => {
+                sib.classList.remove('selected', 'correct', 'wrong');
+            });
+            
+            // Marcar esta opción como seleccionada
+            option.classList.add('selected');
+            
+            // Verificar si es correcta
+            const questionNumber = parseInt(option.closest('.question').id.replace('q', ''));
+            if (option.hasAttribute('data-correct')) {
+                option.classList.add('correct');
+            } else {
+                option.classList.add('wrong');
+            }
+        }
+        
+        function finishQuiz() {
+            const participantName = document.getElementById('participant-name').value || "Anónimo";
+            
+             // Calcular puntuación
+            score = 0;
+            const correctOptions = document.querySelectorAll('.option[data-correct="true"].selected');
+            score = correctOptions.length;
+            
+            // Verificar respuestas abiertas (aquí puedes agregar lógica para evaluarlas)
+            
+            // Guardar participante
+            const participant = {
+                name: participantName,
+                score: score,
+                total: totalQuestions,
+                date: new Date().toLocaleDateString(),
+                answers: {}
+            };
+                 
+                 // Guardar la respuesta del usuario
+            userAnswers[questionNumber] = option.textContent;
+            
+            // Verificar si la respuesta es correcta
+            if (option.dataset.correct === "true") {
+                option.classList.add('correct');
+            } else {
+                option.classList.add('wrong');
+                
+                // Mostrar la opción correcta
+                const correctOption = option.closest('.options').querySelector('[data-correct="true"]');
+                if (correctOption) {
+                    correctOption.classList.add('correct');
+                }
+            }
+            
+            // Deshabilitar más selecciones para esta pregunta
+            option.closest('.options').querySelectorAll('.option').forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+        }
+        
+        // Avanzar a la siguiente pregunta
+        function nextQuestion() {
+            if (currentQuestion < totalQuestions) {
+                document.getElementById(`q${currentQuestion}`).classList.remove('active');
+                currentQuestion++;
+                document.getElementById(`q${currentQuestion}`).classList.add('active');
+                updateProgress();
+                
+                // Habilitar/deshabilitar botones de navegación
+                document.getElementById('prev-btn').disabled = currentQuestion === 1;
+                document.getElementById('next-btn').textContent = currentQuestion === totalQuestions ? 'Finalizar →' : 'Siguiente →';
+            } else {
+                finishQuiz();
+            }
+        }
+        
+        // Retroceder a la pregunta anterior
+        function prevQuestion() {
+            if (currentQuestion > 1) {
+                document.getElementById(`q${currentQuestion}`).classList.remove('active');
+                currentQuestion--;
+                document.getElementById(`q${currentQuestion}`).classList.add('active');
+                updateProgress();
+                          // Habilitar/deshabilitar botones de navegación
+                document.getElementById('prev-btn').disabled = currentQuestion === 1;
+                document.getElementById('next-btn').textContent = currentQuestion === totalQuestions ? 'Finalizar →' : 'Siguiente →';
+            }
+        }
+        
+        // Actualizar barra de progreso
+        function updateProgress() {
+            const progressPercentage = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progress').style.width = `${progressPercentage}%`;
+            document.getElementById('current-question').textContent = currentQuestion;
+        }
+        
+        // Finalizar el test y mostrar resultados
+        function finishQuiz() {
+            // Calcular puntuación
+            score = 0;
+            for (let i = 1; i <= totalQuestions; i++) {
+                if (userAnswers[i] && userAnswers[i] === correctAnswers[i]) {
+                    score++;
+                }
+            }
+            
+            // Guardar participante
+            const participantName = document.getElementById('participant-name').value || 'Anónimo';
+            participants.push({ name: participantName, score: score });
+            
+            // Mostrar resultados
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('score').textContent = score;
+            document.getElementById('total-score').textContent = totalQuestions;
+            
+            // Mostrar mensaje según puntuación
+            const percentage = (score / totalQuestions) * 100;
+            let emoji, message;
+            
+            if (percentage >= 80) {
+                emoji = '😍';
+                message = '¡Eres un/a verdadero/a experto/a en mí! ¡Me conoces mejor que nadie!';
+            } else if (percentage >= 60) {
+                emoji = '😊';
+                message = '¡Buen trabajo! Me conoces bastante bien, pero aún hay cosas por descubrir.';
+            } else if (percentage >= 40) {
+                emoji = '😐';
+                message = 'No está mal, pero podrías conocerme un poco mejor.';
+            } else {
+                emoji = '😢';
+                message = 'Parece que aún hay mucho que no sabes de mí. ¡Tenemos que pasar más tiempo juntos!';
+            }
+            
+            document.getElementById('result-emoji').textContent = emoji;
+            document.getElementById('result-message').textContent = message;
+            
+            // Mostrar respuestas correctas
+            const answerKey = document.getElementById('answer-key');
+            for (let i = 1; i <= totalQuestions; i++) {
+                if (correctAnswers[i]) {
+                    const answerItem = document.createElement('div');
+                    answerItem.className = 'answer-item';
+                    answerItem.innerHTML = `
+                        <p><strong>Pregunta ${i}:</strong> ${document.getElementById(`q${i}`).querySelector('h3').textContent}</p>
+                        <p class="correct-answer">Respuesta correcta: ${correctAnswers[i]}</p>
+                    `;
+                    answerKey.appendChild(answerItem);
+                }
+            }
+            
+            // Mostrar lista de participantes
+            const participantsList = document.getElementById('participants-list');
+            participants.forEach(participant => {
+                const participantElement = document.createElement('div');
+                participantElement.className = 'participant';
+                participantElement.innerHTML = `
+                    <div class="participant-name">${participant.name}</div>
+                    <div class="participant-score">Puntuación: ${participant.score}/${totalQuestions}</div>
+                `;
+                participantsList.appendChild(participantElement);
+            });
+        }
+        
+        // Reiniciar el test
+        function restartQuiz() {
+            currentQuestion = 1;
+            score = 0;
+            userAnswers = {};
+            
+            // Restablecer preguntas
+            document.querySelectorAll('.question').forEach(question => {
+                question.classList.remove('active');
+                question.querySelectorAll('.option').forEach(option => {
+                    option.classList.remove('selected', 'correct', 'wrong');
+                    option.style.pointerEvents = 'auto';
+                });
+            });
+            
+            document.getElementById('q1').classList.add('active');
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('answer-key').innerHTML = '<h3>Respuestas correctas:</h3>';
+            document.getElementById('participants-list').innerHTML = '<h3>Resultados de participantes:</h3>';
+            updateProgress();
+            
+            // Restablecer botones de navegación
+            document.getElementById('prev-btn').disabled = true;
+            document.getElementById('next-btn').textContent = 'Siguiente →';
+        }
+        
+             // Compartir en Facebook
+        function shareOnFacebook() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent(`¡He obtenido ${score}/${totalQuestions} en el test de amistad de ${document.getElementById('your-name').textContent}! ¿Cuánto sabes tú?`);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank');
+        }
+        
+        // Compartir en WhatsApp
+        function shareOnWhatsApp() {
+            const text = encodeURIComponent(`¡He obtenido ${score}/${totalQuestions} en el test de amistad de ${document.getElementById('your-name').textContent}! ¿Cuánto sabes tú? Prueba aquí: ${window.location.href}`);
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+        
+        // Cambiar pestañas en la sección de crear test
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        // Descargar test personalizado
+        function downloadTest() {
+            const creatorName = document.getElementById('creator-name').value || 'Amigo/a';
+            const testTitle = document.getElementById('test-title').value || '¿Cuánto me conoces realmente? ¡El Test de la Amistad!';
+            
+            // Crear un blob con el código HTML modificado
+            const htmlContent = document.documentElement.outerHTML
+                .replace('¿Cuánto me conoces realmente? ¡El Test de la Amistad!', testTitle)
+                .replace('Amigo/a', creatorName)
+                .replace('[Tu Nombre]', creatorName);
+            
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+               // Crear enlace de descarga
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Test de Amistad - ${creatorName}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
+```
+            
+            
+            
+        
